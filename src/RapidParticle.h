@@ -5,6 +5,8 @@
 #include "Math/Point3D.h"
 #include "TLorentzVector.h"
 #include "TString.h"
+#include "Math/Point3D.h"
+#include "Math/Vector3D.h"
 
 #include "RooDataSet.h"
 #include "RapidVertex.h"
@@ -35,6 +37,10 @@ class RapidParticle {
 
 		bool generate();
 		double getIP() { return ip_; }
+			//-----------3DIP----------------
+		double getIPX() { return ipx_; }
+		double getIPY() { return ipy_; }
+		double getIPZ() { return ipz_; }
 		double getMinIP() { return minip_; }
 		double getSigmaIP() { return sigmaip_; }
 		double getSigmaMinIP() { return sigmaminip_; }
@@ -44,7 +50,7 @@ class RapidParticle {
 		TLorentzVector& getPSmeared() { return pSmeared_; }
 
 		void smearMomentum();
-		void smearIP();
+		void smearIP(ROOT::Math::XYZVector ip_vec);
 		double getFD(bool truth);
 
 		int id() { return id_; }
@@ -66,6 +72,10 @@ class RapidParticle {
 
 		bool hasCharm();
 		bool hasBeauty();
+		bool isEta();
+		bool isPion();
+		bool isKaon();
+		bool isGstar();
 
 		RapidParticle* daughter(unsigned int i);
 		RapidParticle* next() { return next_; }
@@ -84,6 +94,10 @@ class RapidParticle {
 
 		void setP(TLorentzVector p) { p_ = p; }
 		void setIP(double ip) { ip_ = ip; }
+			//-----------3DIP----------------
+		void setIPX(double ipx) { ipx_ = ipx; }
+		void setIPY(double ipy) { ipy_ = ipy; }
+		void setIPZ(double ipz) { ipz_ = ipz; }
 		void setMinIP(double ip) { minip_ = ip; }
 		// Next four methods should not be used except in a special case, this is filthy coding
 		void setIPSmeared(double ip) { ipSmeared_ = ip; }
@@ -126,6 +140,10 @@ class RapidParticle {
 
 		double fd_;
 		double ip_;
+			//-----------3DIP----------------
+		double ipx_;
+		double ipy_;
+		double ipz_;
 		double minip_;
 		double sigmaip_;
 		double sigmaminip_;

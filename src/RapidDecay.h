@@ -60,7 +60,7 @@ class RapidDecay {
 		bool genDecayAccRej();
 		void smearMomenta();
 		void calcIPs();
-		double getParticleIP(ROOT::Math::XYZPoint, ROOT::Math::XYZPoint, TLorentzVector);
+		ROOT::Math::XYZVector getParticleIP(ROOT::Math::XYZPoint, ROOT::Math::XYZPoint, TLorentzVector);
 
 		//the particles
 		std::vector<RapidParticle*> parts_;

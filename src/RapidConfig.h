@@ -3,6 +3,8 @@
 
 #include <map>
 #include <vector>
+#include "Math/Point3D.h"
+#include "Math/Vector3D.h"
 
 #include "TH1.h"
 #include "TH2.h"

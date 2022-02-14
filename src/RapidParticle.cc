@@ -1,9 +1,11 @@
 #include "RapidParticle.h"
-
+#include <vector>
 #include <iostream>
 
 #include "TMath.h"
 #include "TRandom.h"
+#include "Math/Point3D.h"
+#include "Math/Vector3D.h"
 
 #include "RapidIPSmearGauss.h"
 #include "RapidMomentumSmearEnergyGauss.h"
@@ -80,7 +82,7 @@ double RapidParticle::getFD(bool truth) {
 	}
 }
 
-void RapidParticle::smearIP() {
+void RapidParticle::smearIP(ROOT::Math::XYZVector ip_vec) {
 	if(nDaughters() != 0) {
 		// Do not smear the IP of decaying particles
 		// It is a derived quantity which can be computed from their
@@ -96,10 +98,10 @@ void RapidParticle::smearIP() {
 			minipSmeared_ = minip_;
 			sigmaminip_ = 0.;
 		} else if (ipSmear_) {
-			std::pair<double,double> smearedips = ipSmear_->smearIP(ip_,p_.Pt());
+			std::pair<double,double> smearedips = ipSmear_->smearIP(p_.Pt(), ip_vec);
 			ipSmeared_ = smearedips.first;
 			sigmaip_   = smearedips.second;
-			std::pair<double,double> smearedminips = ipSmear_->smearIP(minip_,p_.Pt());
+			std::pair<double,double> smearedminips = ipSmear_->smearIP(p_.Pt(), ip_vec);
 			minipSmeared_ = smearedminips.first;
 			sigmaminip_   = smearedminips.second;
 		} else {
@@ -127,6 +129,10 @@ TString RapidParticle::massHypothesisName() {
 bool RapidParticle::hasFlavour(int flavour) {
 	int id = TMath::Abs(id_);
 
+	if(id==221 && flavour==99) return true;
+	if(id==81 && flavour==98) return true;
+	if(id==211 && flavour==97) return true;
+	if(id==321 && flavour==96) return true;
 	if(id==flavour) return true;
 	if(id<100) return false;
 
@@ -143,6 +149,22 @@ bool RapidParticle::hasCharm() {
 
 bool RapidParticle::hasBeauty() {
 	return hasFlavour(5);
+}
+
+bool RapidParticle::isEta() {
+	return hasFlavour(99);
+}
+
+bool RapidParticle::isGstar() {
+	return hasFlavour(98);
+}
+
+bool RapidParticle::isPion() {
+	return hasFlavour(97);
+}
+
+bool RapidParticle::isKaon() {
+	return hasFlavour(96);
 }
 
 RapidParticle* RapidParticle::daughter(unsigned int i) {

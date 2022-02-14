@@ -25,6 +25,10 @@ class RapidParam {
 			PZ,       //Z-momentum
 			PT,       //Transverse momentum
 			IP,       //IP to own PV
+			//-----------3DIP----------------
+			IPX,
+			IPY,
+			IPZ,
 			SIGMAIP,  //Error on IP to own PV
 			MINIP,    //IP to geometrically closest PV
 			SIGMAMINIP,  //Error on geometrically closest PV

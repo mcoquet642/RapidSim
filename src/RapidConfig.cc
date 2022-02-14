@@ -1,5 +1,5 @@
 #include "RapidConfig.h"
-
+#include <vector>
 #include <cstdlib>
 #include <fstream>
 #include <iostream>
@@ -7,6 +7,8 @@
 
 #include "TFile.h"
 #include "TRandom.h"
+#include "Math/Point3D.h"
+#include "Math/Vector3D.h"
 
 #include "RapidAcceptance.h"
 #include "RapidAcceptanceLHCb.h"
@@ -265,6 +267,22 @@ bool RapidConfig::loadDecay() {
 				motherFlavour_ = "c";
 				std::cout << "INFO in RapidConfig::loadDecay : Parent has charm." << std::endl;
 				std::cout << "                                 setting c-quark kinematics." << std::endl;
+			} else if(theMother->isEta()) {
+				motherFlavour_ = "e";
+				std::cout << "INFO in RapidConfig::loadDecay : Parent is eta." << std::endl;
+				std::cout << "                                 setting eta kinematics." << std::endl;
+			} else if(theMother->isGstar()) {
+				motherFlavour_ = "g";
+				std::cout << "INFO in RapidConfig::loadDecay : Parent is virtual photon." << std::endl;
+				std::cout << "                                 setting gamma* kinematics." << std::endl;
+			} else if(theMother->isPion()) {
+				motherFlavour_ = "p";
+				std::cout << "INFO in RapidConfig::loadDecay : Parent is pion." << std::endl;
+				std::cout << "                                 setting pion kinematics." << std::endl;
+			} else if(theMother->isKaon()) {
+				motherFlavour_ = "k";
+				std::cout << "INFO in RapidConfig::loadDecay : Parent is kaon." << std::endl;
+				std::cout << "                                 setting kaon kinematics." << std::endl;
 			} else {
 				std::cout << "WARNING in RapidConfig::loadDecay : Parent has neither beauty nor charm." << std::endl;
 				std::cout << "                                    defaulting to b-quark kinematics." << std::endl;

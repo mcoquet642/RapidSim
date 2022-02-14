@@ -7,16 +7,23 @@
 #include "TString.h"
 
 #include "RooRealVar.h"
+#include "RooCFunction2Binding.h" 
+#include "RooTFnBinding.h"
 
 class RooRelBreitWigner;
 class RooGounarisSakurai;
+class RooExponential;
+class RooAbsPdf;
+class RooTFnBinding;
+//class RooCFunction3Binding;
 class RapidParticle;
 
 class RapidParticleData {
 	public:
 		enum ResLineShape {
 			RelBW,
-			GS
+			GS,
+			Thermal
 		};
 
 		static RapidParticleData* getInstance();
@@ -72,6 +79,7 @@ class RapidParticleData {
 
 		RooRelBreitWigner* makeRelBW(RooRealVar& m, double mean, double gamma, double thespin, double m1, double m2, TString name);
 		RooGounarisSakurai* makeGS(RooRealVar& m, double mean, double gamma, double thespin, double m1, double m2, TString name);
+		RooCFunction2PdfBinding<double, double, double>* makeThermal(RooRealVar& m, RooRealVar& temperature);//, double slope, TString name);
 
 		std::map<int, double> idToCT_;
 		std::map<int, double> idToMass_;

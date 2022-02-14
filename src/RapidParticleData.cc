@@ -6,6 +6,13 @@
 
 #include "RooRelBreitWigner.h"
 #include "RooGounarisSakurai.h"
+#include "RooExponential.h"
+#include "RooCFunction2Binding.h"
+#include "RooTFnBinding.h"
+#include "RooAbsPdf.h"
+
+#include "TMath.h"
+#include "Math/DistFunc.h"
 
 #include "RapidParticle.h"
 
@@ -194,10 +201,14 @@ void RapidParticleData::setupMass(RapidParticle* part) {
 	double mmax = mass + 100.*width;
 
 	RooRealVar m(varName,varName,mmin,mmax);
+	RooRealVar temperature("mass","mass",mass);
 	RooAbsPdf* pdf(0);
 	switch(shape) {
 		case RapidParticleData::GS:
 			pdf = makeGS(m, mass, width, spin, mA, mB, name);
+			break;
+	         case RapidParticleData::Thermal:
+		        pdf = makeThermal(m, temperature);
 			break;
 		default:
 			std::cout << "WARNING in RapidParticleData::setupMass : unknown lineshape for " << name << "." << std::endl
@@ -227,6 +238,7 @@ void RapidParticleData::addEntry(int id, TString name, double mass, double width
 	sanitisedNameToId_[sanitiseName(name)] = id;
 	if(lineshape=="RBW") idToShape_[id] = RapidParticleData::RelBW;
 	else if(lineshape=="GS") idToShape_[id] = RapidParticleData::GS;
+	else if(lineshape=="THERMAL") idToShape_[id] = RapidParticleData::Thermal;
 }
 
 TString RapidParticleData::sanitiseName(TString name) {
@@ -307,6 +319,18 @@ RooGounarisSakurai* RapidParticleData::makeGS(RooRealVar& m, double mean, double
 
 	return new RooGounarisSakurai(name,name, m,*m0,*g0,*spin, *radius,*ma,*mb);
 }
+
+RooCFunction2PdfBinding<double, double, double>* RapidParticleData::makeThermal(RooRealVar & m, RooRealVar & temperature){//, double slope, TString name) {
+
+//  RooRealVar inversetemp(name+" inversetemp", name+" inversetemp", 1./slope);
+//  RooRealVar y(name+"threshold", name+"threshold", 2.);
+  //TODO: norm
+  //  RooRealVar* norm    = new RooRealVar(name+"norm", name+"norm", thespin);
+  //need to reject masses below muon mass (could use width for this)
+  
+  return new RooCFunction2PdfBinding<double,double,double>("thermal","thermal",[](double m, double temperature){ return (m > 0.212) ? pow(m*temperature, 1.5)*exp(-m/temperature) : 0.0; },m, temperature);
+}
+
 
 bool RapidParticleData::checkHierarchy(const std::vector<RapidParticle*>& parts) {
 	std::vector<RapidParticle*>::const_iterator it1 = parts.begin();

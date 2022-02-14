@@ -2,8 +2,10 @@
 #define RAPIDIPSMEARGAUSS_H
 
 #include "TGraphErrors.h"
-
+#include <vector>
 #include "RapidIPSmear.h"
+#include "Math/Point3D.h"
+#include "Math/Vector3D.h"
 
 class RapidIPSmearGauss : public RapidIPSmear {
 	public:
@@ -11,7 +13,7 @@ class RapidIPSmearGauss : public RapidIPSmear {
 
 		~RapidIPSmearGauss() {}
 
-		std::pair<double,double> smearIP(double ip, double pt);
+		std::pair<double,double> smearIP(double pt, ROOT::Math::XYZVector ip_vec);
 
 	private:
 		double intercept_,slope_;

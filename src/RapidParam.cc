@@ -16,6 +16,10 @@ double RapidParam::eval() {
 
 	double fd      = particles_[0]->getFD(truth_);
 	double ip      = particles_[0]->getIP();
+			//-----------3DIP----------------
+	double ipx      = particles_[0]->getIPX();
+	double ipy      = particles_[0]->getIPY();
+	double ipz      = particles_[0]->getIPZ();
 	double minip   = particles_[0]->getMinIP();
 	double ipSigma = particles_[0]->getSigmaIP();
 	double minipSigma = particles_[0]->getSigmaMinIP();
@@ -25,6 +29,9 @@ double RapidParam::eval() {
 			mom_ += particles_[i]->getP();
 		}
 	} else {
+		ipx = particles_[0]->getIPX();
+		ipy = particles_[0]->getIPY();
+		ipz = particles_[0]->getIPZ();
 		ip = particles_[0]->getIPSmeared();
 		minip = particles_[0]->getMinIPSmeared();
 		for(unsigned int i=0; i<particles_.size(); ++i) {
@@ -65,6 +72,13 @@ double RapidParam::eval() {
 			return mom_.Beta();
 		case RapidParam::IP:
 			return ip;
+			//-----------3DIP----------------
+		case RapidParam::IPX:
+			return ipx;
+		case RapidParam::IPY:
+			return ipy;
+		case RapidParam::IPZ:
+			return ipz;
 		case RapidParam::SIGMAIP:
 			return ipSigma;
 		case RapidParam::MINIP:
@@ -134,6 +148,13 @@ bool RapidParam::canBeSmeared() {
 			return true;
 		case RapidParam::IP:
 			return true;
+			//-----------3DIP----------------
+		case RapidParam::IPX:
+			return false;
+		case RapidParam::IPY:
+			return false;
+		case RapidParam::IPZ:
+			return false;
 		case RapidParam::SIGMAIP:
 			return false;
 		case RapidParam::MINIP:
@@ -211,6 +232,13 @@ bool RapidParam::canBeTrue() {
 		case RapidParam::BETA:
 			return true;
 		case RapidParam::IP:
+			return true;
+			//-----------3DIP----------------
+		case RapidParam::IPX:
+			return true;
+		case RapidParam::IPY:
+			return true;
+		case RapidParam::IPZ:
 			return true;
 		case RapidParam::SIGMAIP:
 			return true;
@@ -398,6 +426,13 @@ TString RapidParam::typeName() {
 			return "MT";
 		case RapidParam::IP:
 			return "IP";
+			//-----------3DIP----------------
+		case RapidParam::IPX:
+			return "IPX";
+		case RapidParam::IPY:
+			return "IPY";
+		case RapidParam::IPZ:
+			return "IPZ";
 		case RapidParam::SIGMAIP:
 			return "SIGMAIP";
 		case RapidParam::MINIP:
@@ -474,6 +509,13 @@ RapidParam::ParamType RapidParam::typeFromString(TString str) {
 		return RapidParam::MT;
 	} else if(str=="IP") {
 		return RapidParam::IP;
+			//-----------3DIP----------------
+	} else if(str=="IPX") {
+		return RapidParam::IPX;
+	} else if(str=="IPY") {
+		return RapidParam::IPY;
+	} else if(str=="IPZ") {
+		return RapidParam::IPZ;
 	} else if(str=="SIGMAIP") {
 		return RapidParam::SIGMAIP;
 	} else if(str=="MINIP") {
@@ -594,6 +636,10 @@ void RapidParam::setDefaultMinMax(const std::vector<RapidParticle*>& parts, doub
 			max = max*max;
 			break;
 		case RapidParam::IP:
+			//-----------3DIP----------------
+		case RapidParam::IPX:
+		case RapidParam::IPY:
+		case RapidParam::IPZ:
 		case RapidParam::SIGMAIP:
 		case RapidParam::MINIP:
 		case RapidParam::SIGMAMINIP:

@@ -5,6 +5,8 @@
 
 #include "TMath.h"
 #include "TRandom.h"
+#include "Math/Point3D.h"
+#include "Math/Vector3D.h"
 
 #include "RapidExternalEvtGen.h"
 #include "RapidMomentumSmearGauss.h"
@@ -108,10 +110,29 @@ void RapidDecay::calcIPs() {
 	for(itrPart = parts_.begin(); itrPart!=parts_.end(); ++itrPart) {
 		RapidParticle* part = (*itrPart);
 		double ip(0.);
-		ip = getParticleIP(signalpv->getVertex(true),part->getOriginVertex()->getVertex(true),part->getP());
+			//-----------3DIP----------------
+		double ipx(0.);
+		double ipy(0.);
+		double ipz(0.);
+		ROOT::Math::XYZVector ip_vec;
+		ip_vec = getParticleIP(signalpv->getVertex(true),part->getOriginVertex()->getVertex(true),part->getP());
+		ip = sqrt(ip_vec.Mag2());
+			//-----------3DIP----------------
+		ipx=ip_vec.X();
+		ipy=ip_vec.Y();
+		ipz=ip_vec.Z();
+		part->setIPX(ipx);
+		part->setIPY(ipy);
+		part->setIPZ(ipz);
+
 		part->setIP(ip);
-		part->smearIP();
+		part->smearIP(ip_vec);
 		//Now the pileup, we cache the results of the IP smearing first...
+			//-----------3DIP----------------
+		double cachedipx = part->getIPX();
+		double cachedipy = part->getIPY();
+		double cachedipz = part->getIPZ();
+
 		double cachedip = part->getIP();
 		double cachedipsmeared = part->getIPSmeared();
 		double cachedsigmaip = part->getSigmaIP();
@@ -121,9 +142,11 @@ void RapidDecay::calcIPs() {
 		double cachedsigmaminip = cachedsigmaip;
 		std::vector<RapidVertex>::iterator itrVtx;
 		for(itrVtx = pileuppvs_.begin(); itrVtx != pileuppvs_.end(); ++itrVtx) {
-			double thisip = getParticleIP((*itrVtx).getVertex(true),part->getOriginVertex()->getVertex(true),part->getP());
+			ROOT::Math::XYZVector thisip_vec;
+			thisip_vec = getParticleIP((*itrVtx).getVertex(true),part->getOriginVertex()->getVertex(true),part->getP());
+			double thisip = sqrt(thisip_vec.Mag2());
 			part->setMinIP(thisip);
-			part->smearIP();
+			part->smearIP(thisip_vec);
 			if (std::fabs(part->getMinIPSmeared()) < std::fabs(cachedminipsmeared)) {
 				cachedminip = part->getMinIP();
 				cachedminipsmeared = part->getMinIPSmeared();
@@ -132,6 +155,11 @@ void RapidDecay::calcIPs() {
 		}
 		// Use the cached information to set things now... this is not the best coding ever but mandated
 		// by the fact that the particle owns the smearing tool...
+			//-----------3DIP----------------
+		part->setIPX(cachedipx);
+		part->setIPY(cachedipy);
+		part->setIPZ(cachedipz);
+
 		part->setIP(cachedip);
 		part->setIPSmeared(cachedipsmeared);
 		part->setIPSigma(cachedsigmaip);
@@ -307,14 +335,16 @@ bool RapidDecay::genDecay(bool acceptAny) {
 	return true;
 }
 
-double RapidDecay::getParticleIP(ROOT::Math::XYZPoint pv, ROOT::Math::XYZPoint dv, TLorentzVector p) {
+ROOT::Math::XYZVector RapidDecay::getParticleIP(ROOT::Math::XYZPoint pv, ROOT::Math::XYZPoint dv, TLorentzVector p) {
 	ROOT::Math::XYZVector v1 = pv - dv;
 	ROOT::Math::XYZVector lengthv(p.X(), p.Y(), p.Z());
-	ROOT::Math::XYZVector v2 = v1 + lengthv;
+	ROOT::Math::XYZVector up = lengthv.Unit();
+	double proj = v1.Dot(up);
+	ROOT::Math::XYZVector v2 = proj*up;
 
-	ROOT::Math::XYZVector impact = v1.Cross(v2)/sqrt(lengthv.Mag2());
+	ROOT::Math::XYZVector impact = v1-v2;
 
-	return sqrt(impact.Mag2());
+	return impact;
 }
 
 bool RapidDecay::genDecayAccRej() {

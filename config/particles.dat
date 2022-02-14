@@ -6,6 +6,8 @@ ID		part		anti		mass		width		charge		spin		shape       ctau
 15		tau-		tau+		1.77686		0.		-1		0.5		---		87.03
 16		nutau		anti-nutau	0.		0.		 0		0.5		---		-1.
 22		gamma		---		0.		0.		 0		1.0		---		-1.
+81		gammastar       ---             0.4             1.00             0              1.0             THERMAL         -1.
+82		gammastar2      ---             0.005022        0.               0              1.0             ---             -1.
 111		pi0		---		0.1349766	0.00000000773	 0		0.0		RBW		-1.
 211		pi+		pi-		0.13957018	0.		 1		0.0		---		7804500.
 221		eta		---		0.547862	0.00000131	 0		0.0		---		-1.
